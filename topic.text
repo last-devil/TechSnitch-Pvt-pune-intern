@@ -1,0 +1,117 @@
+https://developer.servicenow.com/dev.do#!/home
+
+
+
+ 
+Getting a developer instance from ServiceNow developer site
+Next Experience User Interface
+Next Experience UI - Banner frame
+Next Experience UI - Pin
+Next Experience UI - All menu
+Next Experience UI - Favorites menu
+Next Experience UI - History menu
+Next Experience UI - Workspaces menu
+Next Experience UI - Filter Navigator
+Exploring Next Experience Banner Frame
+User Profile
+Instance Personalization (Preferences)
+Configuring theme of Next Experience UI
+Purpose of Impersonate User
+Purpose of Elevate Role
+Exploring Next Experience Banner Frame
+What is UI15 and UI16?
+How to switch to UI16?
+How to switch from UI 16 to UI 15
+Exploring the switch to UI16 and back to Next Experience UI
+Configuring landing pages
+Configuring Next Experience landing page
+Hands On of Next Experience Ui ,UI 15 and UI 16
+ 
+ https://www.servicenow.com/docs/csh?topicname=next-experience-landing-page.html&version=latest
+
+
+Introduction to List
+Filters
+Condition Builder
+Breadcrumbs and Usage
+Context Menus
+Personalizing and Customizing Lists
+Filters Add to Favorite
+What is a view and how to delete view?
+List views - Configure List Layout
+List Controls
+List Calculations
+Wild Card Entries
+List Editing
+Update Multiple Records
+
+
+Introduction to Form
+Form Header Icons
+Field Types
+Formatters
+Form Design
+Form Design - Interface
+Form Design - Sections
+Form Design - Fields
+Form Layout
+Form Design vs Form Layout
+Relationships
+Related Lists and Embedded List
+Form configuration - Related Lists
+Form views - Personalize form
+Templates
+Add or update records
+
+
+Database Administration	Introduction to Table
+Table components
+Field attributes
+Reference fields
+Extended Tables
+Base Tables
+Types of Tables in ServiceNow - core vs custom
+Adding & modifying application and modules in App. Nav
+Schema Map
+Creating Custom Table
+Default Fields in Custom Table
+Deleting Custom Table
+Unique record identifier(sys_id)
+Prefix u_
+Rollback and Delete Recovery
+Importance of Delete Record Module
+System Dictionary
+Data Dictionary Tables
+Dictionary Override
+Task table
+Remote Tables
+Decision Tables
+
+
+ 
+User
+ Administration	Introduction to User Administration
+Creating Users/ groups / roles
+Working with Groups/ users
+Working with Roles
+Assign roles to Users and Groups
+Delegating roles and users
+Creating Department and Company
+Creating Countries and Locations
+ 
+Product Documentation | ServiceNow
+
+
+Access Control
+
+What is access control?
+Access Control List
+ACL Definition - Permission requirements
+System created access controls
+ACL Decision Type
+ACL Definition - Rule Types
+Using wildcard
+
+
+
+ 
