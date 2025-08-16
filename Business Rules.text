@@ -1,0 +1,148 @@
+1. Close All Related Incidents When a Problem is Closed
+ Trigger: Problem record is updated
+ When: After update
+ Condition: state == "Closed"
+ ```javascript
+ if (current.state == "Closed" && previous.state != "Closed") {
+ var gr = new GlideRecord('incident');
+ gr.addQuery('problem_id', current.sys_id);
+ gr.addQuery('state', '!=', '7'); // Not already closed
+ gr.query();
+ while (gr.next()) {
+ gr.state = 7; // Closed
+ gr.close_code = 'Solved (Work Around)'; // Example value
+ gr.close_notes = 'Closed because the associated Problem was closed.';
+ gr.update();
+ }
+ }
+ ```
+ 2. Prevent Deletion of Users with Active Records
+ Trigger: Before Delete
+ Table: sys_user
+ ```javascript
+ var inc = new GlideRecord('incident');
+ inc.addQuery('active', true);
+ inc.addQuery('assigned_to', current.sys_id);
+ inc.query();
+ if (inc.hasNext()) {
+ gs.addErrorMessage("Cannot delete user assigned to active Incidents.");
+ current.setAbortAction(true);
+ }
+ var chg = new GlideRecord('change_request');
+ chg.addQuery('active', true);
+ chg.addQuery('assigned_to', current.sys_id);
+ chg.query();
+ if (chg.hasNext()) {
+ gs.addErrorMessage("Cannot delete user assigned to active Change Requests.");
+ current.setAbortAction(true);
+ }
+ ```
+ 3. Copy work notes from parent incident to child incidents
+ Trigger: After Insert (on sys_journal_field)
+ Table: sys_journal_field
+ Condition: Element is "work_notes", and the parent incident has child incidents
+ ```javascript
+ if (current.element == "work_notes" && current.table_name == "incident") {
+ var parentIncident = new GlideRecord('incident');
+ if (parentIncident.get(current.documentkey)) {
+ var child = new GlideRecord('incident');
+ child.addQuery('parent_incident', parentIncident.sys_id);
+ child.query();
+ while (child.next()) {
+ child.work_notes = "From parent: " + current.value;
+ child.update();
+ }
+ }
+ }
+ ```
+4. Track changes to category, priority, and assigned_to
+ Trigger: Before Update
+ Table: incident
+ ```javascript
+ var fields = ['category', 'priority', 'assigned_to'];
+ for (var i = 0; i < fields.length; i++) {
+ var field = fields[i];
+ if (current[field] != previous[field]) {
+ var log = new GlideRecord('u_incident_change_log');
+ log.initialize();
+ log.u_field_name = field;
+ log.u_old_value = previous[field].toString();
+ log.u_new_value = current[field].toString();
+ log.u_timestamp = new GlideDateTime();
+ log.u_incident = current.sys_id;
+ log.insert();
+ }
+ }
+ ```
+ 5. Populate service field based on category
+ Trigger: Before Insert & Before Update
+ Table: incident
+ ```javascript
+ if (current.category == "network") {
+ current.service = "Network Services";
+ }
+ ```
+ 6. Create change ticket when incident is on hold for change
+ Trigger: After Update
+ Table: incident
+ ```javascript
+ if (current.state == 3 && current.hold_reason == "Waiting for Change" &&
+ previous.state != 3) {
+ var chg = new GlideRecord('change_request');
+ chg.initialize();
+ chg.short_description = "Auto-generated from Incident " + current.number;
+ chg.description = current.description;
+ chg.cmdb_ci = current.cmdb_ci;
+ chg.incident = current.sys_id;
+ chg.insert();
+ }
+ ```
+ 7. Update Change short description when Problem is resolved
+ Trigger: After Update
+ Table: problem
+ Condition: state changes to Resolved
+ ```javascript
+ if (current.state == 6 && previous.state != 6) {
+ var chg = new GlideRecord('change_request');
+ chg.addQuery('problem_id', current.sys_id);
+ chg.query();
+ while (chg.next()) {
+ chg.short_description = "Problem Resolved: " + current.short_description;
+chg.update();
+ }
+ }
+ ```
+ 8. Prevent priority downgrade from Critical
+ Trigger: Before Update
+ Table: incident
+ ```javascript
+ if (previous.priority == 1 && current.priority != 1) {
+ gs.addErrorMessage("You cannot downgrade priority from Critical.");
+ current.priority = previous.priority;
+ }
+ ```
+ 9. Prevent closing incidents without assignment group if category is Network
+ Trigger: Before Update
+ Table: incident
+ ```javascript
+ if (current.state == 7 && current.category == "network" &&
+ !current.assignment_group) {
+ gs.addErrorMessage("Cannot close a Network incident without assignment group.");
+ current.setAbortAction(true);
+ }
+ ```
+ 10. Add assignment group members to watch list
+ Trigger: Before Insert & Before Update
+ Table: incident
+ ```javascript
+ if (current.assignment_group) {
+ var userList = [];
+ var groupMember = new GlideRecord('sys_user_grmember');
+ groupMember.addQuery('group', current.assignment_group);
+ groupMember.query();
+ while (groupMember.next()) {
+ userList.push(groupMember.user.toString());
+ }
+ current.watch_list = userList.join(',');
+ }
+ ```
